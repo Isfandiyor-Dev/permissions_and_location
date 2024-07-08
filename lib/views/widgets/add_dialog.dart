@@ -5,7 +5,8 @@ import 'package:lesson_72_permissions/controllers/travel_controller.dart';
 import 'package:provider/provider.dart';
 
 class AddDialog extends StatefulWidget {
-  const AddDialog({super.key});
+  bool isAddDialog;
+  AddDialog({super.key, this.isAddDialog = true});
 
   @override
   State<AddDialog> createState() => _AddDialogState();
@@ -23,7 +24,7 @@ class _AddDialogState extends State<AddDialog> {
     return AlertDialog(
       scrollable: true,
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      title: const Text("Add Travel"),
+      title: Text(widget.isAddDialog ? "Add Travel" : "Edit Travel"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -99,18 +100,37 @@ class _AddDialogState extends State<AddDialog> {
         ),
         TextButton(
           onPressed: () {
-            if (titleTextController.text.trim().isNotEmpty) {
-              if (image != null) {
-                Provider.of<TravelController>(context, listen: false).addTravel(
-                  titleTextController.text,
-                  image!,
-                );
+            if (widget.isAddDialog) {
+              if (titleTextController.text.trim().isNotEmpty) {
+                if (image != null) {
+                  Provider.of<TravelController>(context, listen: false)
+                      .addTravel(
+                    titleTextController.text,
+                    image!,
+                  );
+                }
+                errorText = null;
+                setState(() {});
+              } else {
+                errorText = "Please, enter title";
+                setState(() {});
               }
-              errorText = null;
-              setState(() {});
             } else {
-              errorText = "Please, enter title";
-              setState(() {});
+              // if (titleTextController.text.trim().isNotEmpty) {
+              //   if (image != null) {
+              //     Provider.of<TravelController>(context, listen: false)
+              //         .editTravel(
+              //       // id kerak
+              //       titleTextController.text,
+              //       image!, // vaqtinchalik id yo'qligi uchun xatolik berayapti
+              //     );
+              //   }
+              //   errorText = null;
+              //   setState(() {});
+              // } else {
+              //   errorText = "Please, enter title";
+              //   setState(() {});
+              // }
             }
             Navigator.pop(context);
           },

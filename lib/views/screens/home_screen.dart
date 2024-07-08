@@ -5,6 +5,7 @@ import 'package:lesson_72_permissions/models/travel.dart';
 import 'package:lesson_72_permissions/services/location_service.dart';
 import 'package:lesson_72_permissions/views/widgets/add_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/link.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,7 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () async {
           await showDialog(
             context: context,
-            builder: (context) => const AddDialog(),
+            builder: (context) => AddDialog(
+              isAddDialog: true,
+            ),
           );
         },
         child: const Icon(Icons.add_location_alt),
@@ -71,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 15,
                   crossAxisSpacing: 15,
-                  childAspectRatio: 3 / 4),
+                  childAspectRatio: 3 / 4.5),
               itemBuilder: (context, index) {
                 Travel travel = Travel.fromQuery(travels[index]);
                 return Container(
@@ -82,31 +85,71 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        height: 150,
-                        child: Container(color: Colors.blueGrey),
+                        height: 160,
+                        width: double.infinity,
+                        child: Image.network(
+                          travel.imageUrl,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(travel.title),
                             Text(
-                                "lat: ${travel.latitude}, lon: ${travel.longitude}"),
+                              travel.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Link(
+                              uri: Uri.parse(
+                                  "https://www.google.com/maps/@${travel.latitude},${travel.longitude},10z?entry=ttu"),
+                              builder: (BuildContext context,
+                                  FollowLink? followLink) {
+                                return GestureDetector(
+                                  onTap: followLink,
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.location_on_rounded),
+                                      SizedBox(width: 5),
+                                      Text("Location"),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            // Text("lat: ${travel.latitude}"),
+                            // Text("lon: ${travel.longitude}"),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) => AddDialog(
+                                        isAddDialog: false,
+                                      ),
+                                    );
+                                  },
                                   icon: const Icon(
                                     Icons.edit,
                                     color: Colors.black,
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Provider.of<TravelController>(context,
+                                            listen: false)
+                                        .deleteTravel(travel.id);
+                                  },
                                   icon: Icon(
                                     Icons.delete,
                                     color: Colors.red[900],

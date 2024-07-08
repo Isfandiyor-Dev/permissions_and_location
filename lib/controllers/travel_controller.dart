@@ -14,4 +14,12 @@ class TravelController extends ChangeNotifier {
   Future<void> addTravel(String title, File imageUrl) async {
     await _travelService.addTravel(title, imageUrl);
   }
+
+  Future<void> deleteTravel(String travelId) async {
+    await _travelService.deleteTravel(travelId);
+  }
+
+  Future<void> editTravel(String id, String newTitle, File newImageUrl) async {
+    await _travelService.editTravel(id, newTitle, newImageUrl);
+  }
 }
